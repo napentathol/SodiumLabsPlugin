@@ -1,0 +1,25 @@
+plugins {
+    id 'org.spongepowered.plugin' version '0.8.1'
+}
+
+group 'us.sodiumlabs'
+version '1.0-SNAPSHOT'
+description 'Sodium lab\'s plugin'
+
+apply plugin: 'java'
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+    maven {
+        name = 'sponge'
+        url = 'https://repo.spongepowered.org/maven'
+    }
+}
+
+dependencies {
+    compile     group: 'org.spongepowered',     name: 'spongeapi',  version: '7.0.0-SNAPSHOT'
+
+    testCompile group: 'junit',                 name: 'junit',      version: '4.12'
+}
