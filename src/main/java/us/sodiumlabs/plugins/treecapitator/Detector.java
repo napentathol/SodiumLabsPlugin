@@ -20,7 +20,7 @@ import java.util.function.Predicate;
 
 import static java.util.Objects.requireNonNull;
 
-public class Detector {
+class Detector {
     private static final long MAX_DETECTION_TIME = 500;
 
     private static final int MAX_DETECTION_DEPTH = 32;
@@ -69,7 +69,7 @@ public class Detector {
         return BlockTypes.LOG.equals(type) || BlockTypes.LOG2.equals(type);
     }
 
-    boolean isLeaves(final BlockType type) {
+    private boolean isLeaves(final BlockType type) {
         return BlockTypes.LEAVES.equals( type ) || BlockTypes.LEAVES2.equals( type );
     }
 

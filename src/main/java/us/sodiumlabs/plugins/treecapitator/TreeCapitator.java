@@ -11,7 +11,6 @@ import org.spongepowered.api.block.BlockTypes;
 import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.entity.EntityTypes;
-import org.spongepowered.api.entity.Item;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.block.ChangeBlockEvent;
 import org.spongepowered.api.event.cause.Cause;
@@ -93,16 +92,14 @@ public class TreeCapitator {
         event.getTransactions().stream()
             .filter(detector::operatingOnWood)
             .filter(detector::operatingOnTree)
-            .forEach(t -> {
-                t.getOriginal().getLocation().ifPresent( location -> {
-                    if(debug) {
-                        final Vector3i v = location.getBlockPosition();
-                        Sponge.getServer().getBroadcastChannel()
-                            .send(Text.builder(String.format("Found tree at %d,%d,%d", v.getX(), v.getY(), v.getZ())).color(TextColors.GOLD).build());
-                    }
-                    scheduleChopTasks(location, t.getOriginal().getState(), TREE_CAPITATOR_INIT_VECTORS, 0);
-                });
-            });
+            .forEach(t -> t.getOriginal().getLocation().ifPresent(location -> {
+                if(debug) {
+                    final Vector3i v = location.getBlockPosition();
+                    Sponge.getServer().getBroadcastChannel()
+                        .send(Text.builder(String.format("Found tree at %d,%d,%d", v.getX(), v.getY(), v.getZ())).color(TextColors.GOLD).build());
+                }
+                scheduleChopTasks(location, t.getOriginal().getState(), TREE_CAPITATOR_INIT_VECTORS, 0);
+            }));
     }
 
     private void scheduleChopTasks(final Location<World> location, final BlockState original, final List<Vector3i> initVectors, final int depth) {

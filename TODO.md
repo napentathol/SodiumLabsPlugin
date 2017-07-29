@@ -3,9 +3,7 @@ TODO:
 Trees
 ---
 
-* Make leaves spawn less quickly
-* Prevent trees from breaking another tree type
-* Limit break distance
+* Make leaves decay more quickly
 
 Enchants
 ---
