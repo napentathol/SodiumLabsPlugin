@@ -23,7 +23,7 @@ import static java.util.Objects.requireNonNull;
 public class Detector {
     private static final long MAX_DETECTION_TIME = 500;
 
-    private static final int MAX_DETECTION_DEPTH = 128;
+    private static final int MAX_DETECTION_DEPTH = 32;
 
     private static final Predicate<BlockSnapshot> DIRT_PREDICATE =
         (BlockSnapshot snapshot) -> BlockTypes.DIRT.equals(snapshot.getState().getType());

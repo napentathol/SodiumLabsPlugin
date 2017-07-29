@@ -31,11 +31,11 @@ import java.util.List;
 import static java.util.Objects.requireNonNull;
 
 
-@Plugin(id = TreeCapitator.ID, name = "Treecapitator", version = "1.0" )
+@Plugin(id = TreeCapitator.ID, name = "Treecapitator", version = "1.1", description = "treecapitates trees" )
 public class TreeCapitator {
     static final String ID = "treecapitator";
 
-    private static final int MAX_BREAK_DEPTH = 256;
+    private static final int MAX_BREAK_DEPTH = 64;
 
     private static final ImmutableList<Vector3i> TREE_CAPITATOR_INIT_VECTORS =
         ImmutableList.of(
