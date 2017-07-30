@@ -15,7 +15,6 @@ Enchants
 Villagers:
 ---
 
-* Give them names
 * Make them sell enchants
 * Make them auto heal
 
