@@ -8,22 +8,19 @@ import org.spongepowered.api.Sponge;
 import org.spongepowered.api.block.BlockSnapshot;
 import org.spongepowered.api.block.BlockState;
 import org.spongepowered.api.block.BlockTypes;
-import org.spongepowered.api.data.key.Keys;
-import org.spongepowered.api.entity.Entity;
-import org.spongepowered.api.entity.EntityTypes;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.block.ChangeBlockEvent;
 import org.spongepowered.api.event.cause.Cause;
 import org.spongepowered.api.event.cause.NamedCause;
 import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.plugin.Plugin;
-import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.scheduler.Task;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.world.BlockChangeFlag;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
+import us.sodiumlabs.plugins.AbstractPlugin;
 
 import java.util.List;
 
@@ -31,7 +28,7 @@ import static java.util.Objects.requireNonNull;
 
 
 @Plugin(id = TreeCapitator.ID, name = "Treecapitator", version = "1.1", description = "treecapitates trees" )
-public class TreeCapitator {
+public class TreeCapitator extends AbstractPlugin {
     static final String ID = "treecapitator";
 
     private static final int MAX_BREAK_DEPTH = 64;
@@ -75,8 +72,6 @@ public class TreeCapitator {
     private final Detector detector;
 
     private final boolean debug;
-
-    private PluginContainer pluginContainer;
 
     @Inject
     public TreeCapitator(final Logger logger) {
@@ -133,26 +128,21 @@ public class TreeCapitator {
         };
     }
 
-    private PluginContainer getOrInitializePluginContainer() {
-        if(null == pluginContainer) {
-            pluginContainer = requireNonNull(
-                Sponge.getPluginManager().getPlugin(ID).orElse(null), "Requires plugin container!" );
-        }
-        return pluginContainer;
-    }
-
     private void breakBlock(final Location<World> location) {
         final World world = location.getExtent();
         final BlockSnapshot blockSnapshot = world.createSnapshot(location.getBlockPosition());
 
         if(!BlockTypes.AIR.equals(blockSnapshot.getState().getType())) {
-            final Cause cause = Cause.of(NamedCause.of(NamedCause.DECAY, getOrInitializePluginContainer()));
+            final Cause cause = createNamedCause(NamedCause.DECAY);
             world.setBlockType(location.getBlockPosition(), BlockTypes.AIR, BlockChangeFlag.ALL, cause);
 
             final ItemStack itemStack = ItemStack.builder().fromBlockSnapshot(blockSnapshot).quantity(1).build();
-            final Entity itemEntity = world.createEntity(EntityTypes.ITEM, location.getPosition().add(0.5,0.5,0.5));
-            itemEntity.offer(Keys.REPRESENTED_ITEM, itemStack.createSnapshot());
-            world.spawnEntity(itemEntity, cause);
+            spawnItems(location.add(0.5,0.5,0.5), itemStack, cause);
         }
+    }
+
+    @Override
+    protected String getID() {
+        return ID;
     }
 }
