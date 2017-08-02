@@ -18,9 +18,9 @@ Villagers:
 * Make them never run out of sales
 * Make them sell enchants
 * Make them auto heal
+* Make them hand you excess items if they like you
 
-Mobs:
+Mobs
 ---
 
-* prevent creeper damage
-* prevent ender entropy
+* Prevent endermen from putting blocks in their inventory

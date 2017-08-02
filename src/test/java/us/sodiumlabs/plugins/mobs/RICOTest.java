@@ -6,7 +6,7 @@ import org.slf4j.Logger;
 
 import java.util.Random;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 
 public class RICOTest {
@@ -43,5 +43,4 @@ public class RICOTest {
         assertEquals(1, rico.calculateDamage(10,1));
 
     }
-
 }

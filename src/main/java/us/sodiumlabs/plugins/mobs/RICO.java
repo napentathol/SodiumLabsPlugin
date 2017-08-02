@@ -9,13 +9,18 @@ import org.spongepowered.api.data.type.HandTypes;
 import org.spongepowered.api.entity.ArmorEquipable;
 import org.spongepowered.api.entity.Entity;
 import org.spongepowered.api.entity.living.Hostile;
+import org.spongepowered.api.entity.living.monster.Creeper;
+import org.spongepowered.api.entity.living.monster.Enderman;
 import org.spongepowered.api.event.Listener;
+import org.spongepowered.api.event.block.ChangeBlockEvent;
 import org.spongepowered.api.event.cause.Cause;
 import org.spongepowered.api.event.entity.DestructEntityEvent;
+import org.spongepowered.api.event.world.ExplosionEvent;
 import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
+import org.spongepowered.api.world.explosion.Explosion;
 import us.sodiumlabs.plugins.AbstractPlugin;
 
 import java.security.SecureRandom;
@@ -43,13 +48,45 @@ public class RICO extends AbstractPlugin {
     }
 
     @Listener
+    public void onEnderEvent(final ChangeBlockEvent event) {
+        if(event.getCause().root() instanceof Enderman) {
+            event.setCancelled(true);
+            event.getTransactions().forEach(t->t.setValid(false));
+            logger.info(":::: prevented an enderthief!");
+        }
+    }
+
+    @Listener
+    public void onExplode(ExplosionEvent.Pre event) {
+        final Object rootObject = event.getCause().root();
+        // prevent creeper explosions
+        if(rootObject instanceof Creeper
+            && event.getExplosion().shouldBreakBlocks() ) {
+
+            event.setCancelled(true);
+
+            final Explosion explosion = Explosion.builder()
+                .from(event.getExplosion())
+                .shouldBreakBlocks(false)
+                .build();
+
+            final Cause cause = createCauseFromCause(event.getCause());
+
+            explosion.getWorld().triggerExplosion(explosion, cause);
+
+            logger.info(":::: prevented some creefing");
+        }
+    }
+
+    @Listener
     public void onDeath(final DestructEntityEvent.Death event) {
         final Entity entity = event.getTargetEntity();
 
+        // Make mobs drop their stuff on death.
         if(entity instanceof ArmorEquipable && entity instanceof Hostile) {
             final ArmorEquipable armorEntity = (ArmorEquipable) entity;
 
-            final Cause cause = createNamedCause("DEATH");
+            final Cause cause = createCauseFromCause(event.getCause());
             final Location<World> location = entity.getLocation();
 
             damageAndSpawnArmor(location, armorEntity.getBoots(), cause);
