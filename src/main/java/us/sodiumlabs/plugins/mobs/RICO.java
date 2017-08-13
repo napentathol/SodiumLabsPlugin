@@ -15,6 +15,7 @@ import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.block.ChangeBlockEvent;
 import org.spongepowered.api.event.cause.Cause;
 import org.spongepowered.api.event.entity.DestructEntityEvent;
+import org.spongepowered.api.event.filter.cause.Root;
 import org.spongepowered.api.event.world.ExplosionEvent;
 import org.spongepowered.api.item.inventory.ItemStack;
 import org.spongepowered.api.plugin.Plugin;
@@ -48,20 +49,16 @@ public class RICO extends AbstractPlugin {
     }
 
     @Listener
-    public void onEnderEvent(final ChangeBlockEvent event) {
-        if(event.getCause().root() instanceof Enderman) {
-            event.setCancelled(true);
-            event.getTransactions().forEach(t->t.setValid(false));
-            logger.info(":::: prevented an enderthief!");
-        }
+    public void onEnderEvent(final ChangeBlockEvent event, @Root final Enderman enderman) {
+        event.setCancelled(true);
+        event.getTransactions().forEach(t->t.setValid(false));
+        logger.debug(":::: prevented an enderthief!");
     }
 
     @Listener
-    public void onExplode(ExplosionEvent.Pre event) {
-        final Object rootObject = event.getCause().root();
+    public void onExplode(final ExplosionEvent.Pre event, @Root final Creeper creeper) {
         // prevent creeper explosions
-        if(rootObject instanceof Creeper
-            && event.getExplosion().shouldBreakBlocks() ) {
+        if(event.getExplosion().shouldBreakBlocks()) {
 
             event.setCancelled(true);
 
@@ -74,7 +71,7 @@ public class RICO extends AbstractPlugin {
 
             explosion.getWorld().triggerExplosion(explosion, cause);
 
-            logger.info(":::: prevented some creefing");
+            logger.debug(":::: prevented some creefing");
         }
     }
 
