@@ -144,12 +144,8 @@ public class RICO extends AbstractPlugin {
     @VisibleForTesting
     int calculateDamage(final int max) {
         final double r = random.nextDouble() * random.nextDouble();
-        final int damage = (int) Math.floor(r * max);
 
-        logger.info(String.format(":::: Offering item with durability max [%d] min [%d] r [%s], new durability [%d]",
-            max, 0, r, damage));
-
-        return damage;
+        return (int) Math.floor(r * max);
     }
 
     @Override
