@@ -25,6 +25,7 @@ import org.spongepowered.api.item.merchant.TradeOfferListMutator;
 import org.spongepowered.api.item.merchant.VillagerRegistry;
 import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.text.Text;
+import org.spongepowered.api.text.format.TextColors;
 import org.spongepowered.api.world.Location;
 import org.spongepowered.api.world.World;
 import us.sodiumlabs.plugins.AbstractPlugin;
@@ -124,8 +125,22 @@ public class VillaJerks extends AbstractPlugin {
             final Villager villager = (Villager) event.getTargetEntity();
 
             villager.getValue(Keys.DISPLAY_NAME).ifPresent(textValue -> {
+                // Log name and Death cause.
                 logger.info("#### " + textValue.get().toPlain());
                 logger.info(event.getCause().toString());
+
+                // Message channel.
+                final Text deathMessage = Text.builder()
+                    .append(Text.builder("[").color(TextColors.BLACK).build())
+                    .append(Text.builder("REAPER").color(TextColors.RED).build())
+                    .append(Text.builder("]").color(TextColors.BLACK).build())
+                    .append(Text.of(" "))
+                    .append(textValue.get())
+                    .append(Text.of(" has died! May their eternal soul rest in peace!"))
+                    .build();
+                game.getServer().getBroadcastChannel().send(deathMessage);
+
+                // Spawn a sign.
                 final String fullName = textValue.get().toPlain();
                 final int firstSpace = fullName.indexOf(' ');
                 final String firstName = fullName.substring(0, firstSpace);
