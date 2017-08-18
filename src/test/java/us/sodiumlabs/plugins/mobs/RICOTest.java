@@ -18,29 +18,19 @@ public class RICOTest {
         final RICO rico = new RICO(logger, random);
 
         Mockito.when(random.nextDouble()).thenReturn(0.0);
-        assertEquals(0, rico.calculateDamage(10,10));
-        assertEquals(-5, rico.calculateDamage(10,5));
-        assertEquals(-9, rico.calculateDamage(10,1));
+        assertEquals(0, rico.calculateDamage(10));
 
         Mockito.when(random.nextDouble()).thenReturn(0.71);
-        assertEquals(5, rico.calculateDamage(10,10));
-        assertEquals(0, rico.calculateDamage(10,5));
-        assertEquals(-4, rico.calculateDamage(10,1));
+        assertEquals(5, rico.calculateDamage(10));
 
         Mockito.when(random.nextDouble()).thenReturn(1.0);
-        assertEquals(10, rico.calculateDamage(10,10));
-        assertEquals(5, rico.calculateDamage(10,5));
-        assertEquals(1, rico.calculateDamage(10,1));
+        assertEquals(10, rico.calculateDamage(10));
 
         Mockito.when(random.nextDouble()).thenReturn(-0.71);
-        assertEquals(5, rico.calculateDamage(10,10));
-        assertEquals(0, rico.calculateDamage(10,5));
-        assertEquals(-4, rico.calculateDamage(10,1));
+        assertEquals(5, rico.calculateDamage(10));
 
         Mockito.when(random.nextDouble()).thenReturn(-1.0);
-        assertEquals(10, rico.calculateDamage(10,10));
-        assertEquals(5, rico.calculateDamage(10,5));
-        assertEquals(1, rico.calculateDamage(10,1));
+        assertEquals(10, rico.calculateDamage(10));
 
     }
 }

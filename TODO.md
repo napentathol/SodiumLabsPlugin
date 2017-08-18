@@ -9,12 +9,14 @@ Enchants
 ---
 
 * Add enchants:
-  * Aspect of Nitrite
+  * Aspect of Nitrate
 * Add enchants effects
 
 Villagers:
 ---
 
+* Better villager death logging
+* Name metal dudes
 * Make them never run out of sales
 * Make them sell enchants
 * Make them auto heal

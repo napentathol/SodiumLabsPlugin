@@ -15,6 +15,7 @@ import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.block.ChangeBlockEvent;
 import org.spongepowered.api.event.cause.Cause;
 import org.spongepowered.api.event.entity.DestructEntityEvent;
+import org.spongepowered.api.event.entity.SpawnEntityEvent;
 import org.spongepowered.api.event.filter.cause.Root;
 import org.spongepowered.api.event.world.ExplosionEvent;
 import org.spongepowered.api.item.inventory.ItemStack;
@@ -67,12 +68,22 @@ public class RICO extends AbstractPlugin {
                 .shouldBreakBlocks(false)
                 .build();
 
-            final Cause cause = createCauseFromCause(event.getCause());
+            final Cause cause = createNamedCause("HARMLESS EXPLOSION");
 
             explosion.getWorld().triggerExplosion(explosion, cause);
 
             logger.debug(":::: prevented some creefing");
         }
+    }
+
+    @Listener
+    public void onBirth(final SpawnEntityEvent event) {
+        if(event instanceof SpawnEntityEvent.ChunkLoad) return;
+
+        event.getEntities().stream()
+            .filter( entity -> entity instanceof ArmorEquipable && entity instanceof Hostile )
+            .map( e -> (ArmorEquipable) e )
+            .forEach( this::damageItems );
     }
 
     @Listener
@@ -83,15 +94,15 @@ public class RICO extends AbstractPlugin {
         if(entity instanceof ArmorEquipable && entity instanceof Hostile) {
             final ArmorEquipable armorEntity = (ArmorEquipable) entity;
 
-            final Cause cause = createCauseFromCause(event.getCause());
+            final Cause cause = createNamedCause("DROP ITEMS");
             final Location<World> location = entity.getLocation();
 
-            damageAndSpawnArmor(location, armorEntity.getBoots(), cause);
-            damageAndSpawnArmor(location, armorEntity.getLeggings(), cause);
-            damageAndSpawnArmor(location, armorEntity.getChestplate(), cause);
-            damageAndSpawnArmor(location, armorEntity.getHelmet(), cause);
-            damageAndSpawnArmor(location, armorEntity.getItemInHand(HandTypes.MAIN_HAND), cause);
-            damageAndSpawnArmor(location, armorEntity.getItemInHand(HandTypes.OFF_HAND), cause);
+            spawnArmor(location, armorEntity.getBoots(), cause);
+            spawnArmor(location, armorEntity.getLeggings(), cause);
+            spawnArmor(location, armorEntity.getChestplate(), cause);
+            spawnArmor(location, armorEntity.getHelmet(), cause);
+            spawnArmor(location, armorEntity.getItemInHand(HandTypes.MAIN_HAND), cause);
+            spawnArmor(location, armorEntity.getItemInHand(HandTypes.OFF_HAND), cause);
 
             armorEntity.setBoots(null);
             armorEntity.setLeggings(null);
@@ -102,29 +113,41 @@ public class RICO extends AbstractPlugin {
         }
     }
 
-    private void damageAndSpawnArmor(final Location<World> location, final Optional<ItemStack> optionalArmor, final Cause cause) {
-        optionalArmor.ifPresent(armor -> {
-            armor.getValue(Keys.ITEM_DURABILITY).ifPresent(durability -> {
-                final int max = armor.getProperty(UseLimitProperty.class).map(UseLimitProperty::getValue).orElse(1);
-                final int current = durability.get();
+    private void damageItems(final ArmorEquipable armorEntity) {
+        damageItems(armorEntity.getBoots()).ifPresent(armorEntity::setBoots);
+        damageItems(armorEntity.getLeggings()).ifPresent(armorEntity::setLeggings);
+        damageItems(armorEntity.getChestplate()).ifPresent(armorEntity::setChestplate);
+        damageItems(armorEntity.getHelmet()).ifPresent(armorEntity::setHelmet);
+        damageItems(armorEntity.getItemInHand(HandTypes.MAIN_HAND))
+            .ifPresent( i -> armorEntity.setItemInHand(HandTypes.MAIN_HAND, i));
+        damageItems(armorEntity.getItemInHand(HandTypes.OFF_HAND))
+            .ifPresent( i -> armorEntity.setItemInHand(HandTypes.OFF_HAND, i));
+    }
 
-                armor.offer(Keys.ITEM_DURABILITY, calculateDamage(max, current));
+    private Optional<ItemStack> damageItems(final Optional<ItemStack> optionalItemStack) {
+        optionalItemStack.ifPresent( itemStack -> {
+            itemStack.getValue(Keys.ITEM_DURABILITY).ifPresent(durability -> {
+                final int max = itemStack.getProperty(UseLimitProperty.class).map(UseLimitProperty::getValue).orElse(1);
+                itemStack.offer(Keys.ITEM_DURABILITY, calculateDamage(max));
             });
+        });
 
-            if(!armor.getValue(Keys.ITEM_DURABILITY).isPresent()) logger.info(":::: Found item without durability" + armor.toString());
+        return optionalItemStack;
+    }
 
+    private void spawnArmor(final Location<World> location, final Optional<ItemStack> optionalArmor, final Cause cause) {
+        optionalArmor.ifPresent(armor -> {
             spawnItems(location, armor, cause);
         });
     }
 
     @VisibleForTesting
-    int calculateDamage(final int max, final int current) {
+    int calculateDamage(final int max) {
         final double r = random.nextDouble() * random.nextDouble();
-        final int altMax = (int) Math.floor(r * max);
-        final int damage =  altMax - (max - current);
+        final int damage = (int) Math.floor(r * max);
 
-        logger.info(String.format(":::: Offering item with durability max [%d] min [%d] cur [%d] r [%s], altmax [%d] new durability [%d]",
-            max, 0, current, r, altMax, damage));
+        logger.info(String.format(":::: Offering item with durability max [%d] min [%d] r [%s], new durability [%d]",
+            max, 0, r, damage));
 
         return damage;
     }

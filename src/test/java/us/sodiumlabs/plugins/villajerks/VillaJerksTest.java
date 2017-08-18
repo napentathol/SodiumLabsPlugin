@@ -1,11 +1,20 @@
 package us.sodiumlabs.plugins.villajerks;
 
+import org.junit.Before;
 import org.junit.Test;
 
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
 import org.slf4j.Logger;
+import org.spongepowered.api.Game;
+import org.spongepowered.api.GameRegistry;
 import org.spongepowered.api.asset.Asset;
 import org.spongepowered.api.asset.AssetManager;
+import org.spongepowered.api.data.type.Career;
 import org.spongepowered.api.entity.living.Villager;
+import org.spongepowered.api.item.merchant.VillagerRegistry;
 import org.spongepowered.api.text.Text;
 
 import java.io.IOException;
@@ -15,6 +24,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
+import java.util.Random;
 import java.util.UUID;
 
 import static org.junit.Assert.*;
@@ -23,13 +33,47 @@ import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+@RunWith(MockitoJUnitRunner.class)
 public class VillaJerksTest {
+
+    @Mock
+    private Game game;
+
+    @Mock
+    private Logger logger;
+
+    @Mock
+    private GameRegistry gameRegistry;
+
+    @Mock
+    private Career nitwit;
+
+    @Mock
+    private Random random;
+
+    @Mock
+    private AssetManager assetManager;
+
+    @Mock
+    private VillagerRegistry villagerRegistry;
+
+    @InjectMocks
+    private VillaJerks villaJerks;
+
+    @Before
+    public void initialize() throws Exception {
+        initializeAssetManager();
+        initializeGame();
+    }
+
+    private void initializeGame() {
+        when(game.getRegistry()).thenReturn(gameRegistry);
+        when(gameRegistry.getType(Career.class, VillaJerks.NITWIT_ID)).thenReturn(Optional.of(nitwit));
+        when(gameRegistry.getVillagerRegistry()).thenReturn(villagerRegistry);
+    }
+
     @Test
     public void buildVillagerName_zeroeth() throws Exception {
-        final Logger logger = mock(Logger.class);
-        final AssetManager assetManager = initializeAssetManager();
-
-        final VillaJerks villaJerks = new VillaJerks(logger, assetManager);
         villaJerks.onGamePreInitializationEvent(null);
 
         final UUID uuid = new UUID(0L, 0L);
@@ -43,10 +87,6 @@ public class VillaJerksTest {
 
     @Test
     public void buildVillagerName_first() throws Exception {
-        final Logger logger = mock(Logger.class);
-        final AssetManager assetManager = initializeAssetManager();
-
-        final VillaJerks villaJerks = new VillaJerks(logger, assetManager);
         villaJerks.onGamePreInitializationEvent(null);
 
         final UUID uuid = new UUID(1L, 1L);
@@ -60,10 +100,6 @@ public class VillaJerksTest {
 
     @Test
     public void buildVillagerName_last() throws Exception {
-        final Logger logger = mock(Logger.class);
-        final AssetManager assetManager = initializeAssetManager();
-
-        final VillaJerks villaJerks = new VillaJerks(logger, assetManager);
         villaJerks.onGamePreInitializationEvent(null);
 
         final UUID uuid = new UUID(317L, 99L);
@@ -77,10 +113,6 @@ public class VillaJerksTest {
 
     @Test
     public void buildVillagerName_zeroeth_repeat() throws Exception {
-        final Logger logger = mock(Logger.class);
-        final AssetManager assetManager = initializeAssetManager();
-
-        final VillaJerks villaJerks = new VillaJerks(logger, assetManager);
         villaJerks.onGamePreInitializationEvent(null);
 
         final UUID uuid = new UUID(318L, 100L);
@@ -94,10 +126,6 @@ public class VillaJerksTest {
 
     @Test
     public void buildVillagerName_last_neg() throws Exception {
-        final Logger logger = mock(Logger.class);
-        final AssetManager assetManager = initializeAssetManager();
-
-        final VillaJerks villaJerks = new VillaJerks(logger, assetManager);
         villaJerks.onGamePreInitializationEvent(null);
 
         final UUID uuid = new UUID(-1L, -1L);
@@ -109,15 +137,11 @@ public class VillaJerksTest {
         assertEquals("Text{Willie Young}", text.toString());
     }
 
-    private AssetManager initializeAssetManager() throws IOException, URISyntaxException {
-        final AssetManager assetManager = mock(AssetManager.class);
-
+    private void initializeAssetManager() throws IOException, URISyntaxException {
         final Optional<Asset> firstAsset = initializeAsset("assets/villajerks/first.txt");
         when(assetManager.getAsset(any(), eq("first.txt"))).thenReturn(firstAsset);
         final Optional<Asset> lastAsset = initializeAsset("assets/villajerks/last.txt");
         when(assetManager.getAsset(any(), eq("last.txt"))).thenReturn(lastAsset);
-
-        return assetManager;
     }
 
     private Optional<Asset> initializeAsset(final String fileName) throws URISyntaxException, IOException {

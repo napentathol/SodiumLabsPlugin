@@ -35,12 +35,5 @@ public abstract class AbstractPlugin {
         return Cause.of(NamedCause.of(namedCause, getOrInitializePluginContainer()));
     }
 
-    protected Cause createCauseFromCause(final Cause cause) {
-        return Cause.builder()
-            .from(cause)
-            .owner(getOrInitializePluginContainer())
-            .build();
-    }
-
     protected abstract String getID();
 }
