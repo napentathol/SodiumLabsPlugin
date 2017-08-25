@@ -13,7 +13,7 @@ import org.spongepowered.api.world.World;
 
 import static java.util.Objects.requireNonNull;
 
-public abstract class AbstractPlugin {
+public abstract class AbstractPlugin implements CauseCreator {
     private PluginContainer pluginContainer;
 
     protected PluginContainer getOrInitializePluginContainer() {
@@ -31,7 +31,7 @@ public abstract class AbstractPlugin {
         world.spawnEntity(itemEntity, cause);
     }
 
-    protected Cause createNamedCause(final String namedCause) {
+    public Cause createNamedCause(final String namedCause) {
         return Cause.of(NamedCause.of(namedCause, getOrInitializePluginContainer()));
     }
 
