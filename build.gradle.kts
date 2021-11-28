@@ -27,6 +27,11 @@ repositories {
     }
 }
 
+fun DependencyHandlerScope.includeAndExpose(group: String, name: String, version: String) {
+    modApi(group = group, name = name, version = version)
+    include(group = group, name = name, version = version)
+}
+
 dependencies {
     minecraft(group = "com.mojang", name = "minecraft", version = Minecraft.version)
     mappings(group = "net.fabricmc", name = "yarn", version = Fabric.Yarn.version)
@@ -36,7 +41,7 @@ dependencies {
     modImplementation(group = "net.fabricmc", name = "fabric-language-kotlin", version = Fabric.LanguageKotlin.version)
 
     // https://mvnrepository.com/artifact/org.apache.commons/commons-math3
-    include(group = "org.apache.commons", name = "commons-math3", version = Apache.Math.version)
+    includeAndExpose(group = "org.apache.commons", name = "commons-math3", version = Apache.Math.version)
 
     testImplementation(group = "org.junit.jupiter", name = "junit-jupiter-api", version = JUnit.version)
     testRuntimeOnly(group = "org.junit.jupiter", name = "junit-jupiter-engine", version = JUnit.version)

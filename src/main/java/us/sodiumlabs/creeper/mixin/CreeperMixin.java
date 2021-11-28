@@ -1,4 +1,4 @@
-package us.sodiumlabs.creeper;
+package us.sodiumlabs.creeper.mixin;
 
 import net.minecraft.client.render.entity.feature.SkinOverlayOwner;
 import net.minecraft.entity.EntityType;
