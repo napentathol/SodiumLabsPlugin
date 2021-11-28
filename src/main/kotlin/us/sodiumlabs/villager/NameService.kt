@@ -3,7 +3,6 @@ package us.sodiumlabs.villager
 import us.sodiumlabs.ServerProvider
 import us.sodiumlabs.utils.ZipfProvider
 import java.security.SecureRandom
-import java.util.Optional
 
 class NameService(dictionarySeed: Int, nameSeed: Int) {
     private val edgeConsonantGroups = listOf(
@@ -35,14 +34,14 @@ class NameService(dictionarySeed: Int, nameSeed: Int) {
 
         private lateinit var nameService: NameService
 
-        fun getNameServiceInstance(): Optional<NameService> {
+        fun getNameServiceInstance(): NameService {
             if (!::nameService.isInitialized) {
                 val seed = ServerProvider.getServer().map { it.saveProperties.generatorOptions.seed }
-                if(seed.isEmpty) return Optional.empty()
+                        .orElseThrow { RuntimeException("No server to get the seed from") }
 
-                nameService = NameService(seed.get().toInt(), SecureRandom().nextInt())
+                nameService = NameService(seed.toInt(), SecureRandom().nextInt())
             }
-            return Optional.of(nameService)
+            return nameService
         }
     }
 
