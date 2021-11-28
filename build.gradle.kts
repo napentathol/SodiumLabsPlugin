@@ -18,13 +18,13 @@ group = Constants.group
 version = Constants.version
 
 repositories {
+    mavenCentral()
     maven(url = "https://maven.fabricmc.net/") {
         name = "Fabric"
     }
     maven(url = "https://kotlin.bintray.com/kotlinx") {
         name = "Kotlinx"
     }
-    mavenCentral()
 }
 
 dependencies {
@@ -34,6 +34,16 @@ dependencies {
     modImplementation(group = "net.fabricmc.fabric-api", name = "fabric-api", version = Fabric.API.version)
     modImplementation(group = "net.fabricmc", name = "fabric-loader", version = Fabric.Loader.version)
     modImplementation(group = "net.fabricmc", name = "fabric-language-kotlin", version = Fabric.LanguageKotlin.version)
+
+    // https://mvnrepository.com/artifact/org.apache.commons/commons-math3
+    include(group = "org.apache.commons", name = "commons-math3", version = Apache.Math.version)
+
+    testImplementation(group = "org.junit.jupiter", name = "junit-jupiter-api", version = JUnit.version)
+    testRuntimeOnly(group = "org.junit.jupiter", name = "junit-jupiter-engine", version = JUnit.version)
+}
+
+tasks.test {
+    useJUnitPlatform()
 }
 
 tasks.getByName<ProcessResources>("processResources") {

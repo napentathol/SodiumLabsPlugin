@@ -25,7 +25,9 @@ public abstract class VillagerMixin extends MerchantEntity {
 
     @Inject(at = @At("HEAD"), method = "initialize")
     private void initialize(ServerWorldAccess serverWorldAccess, LocalDifficulty localDifficulty, SpawnReason spawnReason, EntityData entityData, NbtCompound nbtCompound, CallbackInfoReturnable<EntityData> returnable) {
-        String name = NameService.Companion.getNameServiceInstance().getName();
+        final NameService nameService = NameService.Companion.getNameServiceInstance()
+            .orElseThrow(() -> new RuntimeException("No server to get the seed from"));
+        final String name = nameService.getName();
         this.setCustomName(Text.of(name));
         this.setCustomNameVisible(true);
     }

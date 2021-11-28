@@ -20,6 +20,16 @@ object Fabric {
     }
 }
 
+object Apache {
+    object Math {
+        const val version = "3.6.1"
+    }
+}
+
 object Kotlin {
     const val version = "1.6.0"
+}
+
+object JUnit {
+    const val version = "5.8.1"
 }
