@@ -19,6 +19,7 @@
   "environment": "*",
   "entrypoints": {
     "main": [
+      "us.sodiumlabs.SodiumServiceInitializer"
     ]
   },
   "mixins": [
