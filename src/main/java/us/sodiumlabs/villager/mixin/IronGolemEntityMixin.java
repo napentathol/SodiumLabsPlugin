@@ -23,8 +23,6 @@ public abstract class IronGolemEntityMixin extends GolemEntity {
     @Nullable
     @Override
     public EntityData initialize(ServerWorldAccess serverWorldAccess, LocalDifficulty localDifficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound nbtCompound) {
-        System.out.println("test");
-
         this.setCustomName(Text.of(NameService.Companion.getNameServiceInstance().getGolemName()));
         this.setCustomNameVisible(true);
 
