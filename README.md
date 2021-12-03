@@ -1,9 +1,15 @@
-# Fabric Example Mod
+# SodiumLabsPlugin
 
-## Setup
+This is a fabric mod for sodium labs' minecraft server.
 
-For setup instructions please see the [fabric wiki page](https://fabricmc.net/wiki/tutorial:setup) that relates to the IDE that you are using.
+## Building
+
+run gradlew build
+
+## Installing
+
+Place jar file output of the gradle build in the mod/ folder
 
 ## License
 
-This template is available under the CC0 license. Feel free to learn from it and incorporate it in your own projects.
+This template is available under the MIT license. Feel free to learn from it and incorporate it in your own projects.

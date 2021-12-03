@@ -1,19 +1,19 @@
 {
   "schemaVersion": 1,
-  "id": "modid",
+  "id": "sodiumlabs",
   "version": "${version}",
 
-  "name": "Example Mod",
-  "description": "This is an example description! Tell everyone what your mod is about!",
+  "name": "Sodium Labs' Mod",
+  "description": "Several convenience mods to make the game better",
   "authors": [
-    "Me!"
+    "napentathol"
   ],
   "contact": {
-    "homepage": "https://fabricmc.net/",
-    "sources": "https://github.com/FabricMC/fabric-example-mod"
+    "homepage": "https://github.com/napentathol/SodiumLabsPlugin",
+    "sources": "https://github.com/napentathol/SodiumLabsPlugin"
   },
 
-  "license": "CC0-1.0",
+  "license": "MIT",
   "icon": "assets/modid/icon.png",
 
   "environment": "*",
@@ -34,8 +34,5 @@
     "minecraft": "1.18.x",
     "java": ">=17",
     "fabric-language-kotlin": ">=1.7.0+kotlin.1.6.0"
-  },
-  "suggests": {
-    "another-mod": "*"
   }
 }

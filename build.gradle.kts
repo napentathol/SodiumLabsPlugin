@@ -22,9 +22,9 @@ repositories {
     maven(url = "https://maven.fabricmc.net/") {
         name = "Fabric"
     }
-    maven(url = "https://kotlin.bintray.com/kotlinx") {
-        name = "Kotlinx"
-    }
+//    maven(url = "https://kotlin.bintray.com/kotlinx") {
+//        name = "Kotlinx"
+//    }
 }
 
 fun DependencyHandlerScope.includeAndExpose(group: String, name: String, version: String) {

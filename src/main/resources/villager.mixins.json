@@ -4,7 +4,9 @@
   "package": "us.sodiumlabs.villager.mixin",
   "compatibilityLevel": "JAVA_16",
   "mixins": [
-    "VillagerMixin"
+    "VillagerMixin",
+    "IronGolemEntityMixin",
+    "CarvedPumpkinBlockMixin"
   ],
   "client": [
   ],
