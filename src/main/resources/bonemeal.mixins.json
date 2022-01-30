@@ -1,0 +1,14 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "us.sodiumlabs.bonemeal.mixin",
+  "compatibilityLevel": "JAVA_16",
+  "mixins": [
+    "BoneMealItemMixin"
+  ],
+  "client": [
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

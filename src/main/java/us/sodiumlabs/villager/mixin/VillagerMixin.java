@@ -13,6 +13,7 @@ import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import us.sodiumlabs.villager.NameService;
 
@@ -29,5 +30,10 @@ public abstract class VillagerMixin extends MerchantEntity {
         final String name = nameService.getName();
         this.setCustomName(Text.of(name));
         this.setCustomNameVisible(true);
+    }
+
+    @Inject(at = @At("HEAD"), method = "wakeUp")
+    private void inject_wakeUp(CallbackInfo info) {
+        this.heal(1.0f);
     }
 }

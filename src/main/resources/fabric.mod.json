@@ -24,6 +24,7 @@
   },
   "mixins": [
     "creeper.mixins.json",
+    "bonemeal.mixins.json",
     "enderman.mixins.json",
     "villager.mixins.json"
   ],

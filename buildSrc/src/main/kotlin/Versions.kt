@@ -1,19 +1,19 @@
 object Minecraft {
-    const val version = "1.18"
+    const val version = "1.18.1"
 }
 
 object Fabric {
     object Loader {
-        const val version = "0.12.6"
+        const val version = "0.12.11"
     }
     object API {
-        const val version = "0.43.1+1.18"
+        const val version = "0.44.0+1.18"
     }
     object Loom {
         const val version = "0.10-SNAPSHOT"
     }
     object Yarn {
-        const val version = "1.18+build.1"
+        const val version = "1.18.1+build.2"
     }
     object LanguageKotlin {
         const val version = "1.7.0+kotlin.1.6.0"
