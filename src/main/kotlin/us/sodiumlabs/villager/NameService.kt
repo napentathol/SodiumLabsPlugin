@@ -61,8 +61,9 @@ class NameService(dictionarySeed: Long, nameSeed: Long) {
 
         fun getNameServiceInstance(): NameService {
             if (!::nameService.isInitialized) {
-                val seed = ServerProvider.getServer().map { it.saveProperties.generatorOptions.seed }
-                        .orElseThrow { RuntimeException("No server to get the seed from") }
+                val seed = ServerProvider.getServer()
+                    .map { it.worldData.worldGenSettings().seed() }
+                    .orElseThrow { RuntimeException("No server to get the seed from") }
 
                 nameService = NameService(seed, SecureRandom().nextLong())
             }

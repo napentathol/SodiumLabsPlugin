@@ -1,29 +1,29 @@
 package us.sodiumlabs.trees
 
 import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents
-import net.minecraft.block.Block
-import net.minecraft.block.BlockState
-import net.minecraft.block.entity.BlockEntity
-import net.minecraft.entity.player.PlayerEntity
-import net.minecraft.util.math.BlockPos
-import net.minecraft.util.math.Vec3i
-import net.minecraft.world.World
+import net.minecraft.core.BlockPos
+import net.minecraft.core.Vec3i
+import net.minecraft.world.entity.player.Player
+import net.minecraft.world.level.Level
+import net.minecraft.world.level.block.Block
+import net.minecraft.world.level.block.entity.BlockEntity
+import net.minecraft.world.level.block.state.BlockState
 import us.sodiumlabs.utils.TickScheduler
 
 class TreeFeller(private val tickScheduler: TickScheduler): PlayerBlockBreakEvents.Before {
     override fun beforeBlockBreak(
-            world: World?,
-            player: PlayerEntity?,
-            blockPosition: BlockPos?,
-            blockState: BlockState?,
-            blockEntity: BlockEntity?
+        world: Level?,
+        player: Player?,
+        blockPosition: BlockPos?,
+        blockState: BlockState?,
+        blockEntity: BlockEntity?
     ): Boolean {
         if (blockState != null && blockPosition != null && world != null) {
             val block = blockState.block ?: return true
 
             if (block.isLog() && detectIfTree(world, blockPosition, block)) {
-                val roofMedia = LOGS_TO_ROOF_MEDIA[block]
-                val logVariants = LOGS_TO_LOGS_VARIANTS[block]
+                val roofMedia = block.getRoofMedia()
+                val logVariants = block.getLogTypes()
                 scheduleChopTasks(TREE_CAPITATOR_INIT_VECS, world, roofMedia, logVariants, blockPosition)
             }
         }
@@ -31,16 +31,16 @@ class TreeFeller(private val tickScheduler: TickScheduler): PlayerBlockBreakEven
     }
 
     private fun scheduleChopTasks(
-            vectors: Set<Vec3i>,
-            world: World,
-            roofMedia: Set<Block>,
-            branchMediaSet: Set<Block>,
-            blockPosition: BlockPos,
-            depth: Int = 0
+        vectors: Set<Vec3i>,
+        world: Level,
+        roofMedia: Set<Block>,
+        branchMediaSet: Set<Block>,
+        blockPosition: BlockPos,
+        depth: Int = 0
     ) {
         if (depth > MAX_DETECTION_DEPTH) return
 
-        val positions = vectors.map { blockPosition.add(it) }
+        val positions = vectors.map { blockPosition.offset(it) }
         positions
                 .filter { branchMediaSet.contains(world.getBlockState(it).block) }
                 .forEach { scheduleChopTask(world, roofMedia, branchMediaSet, it, depth) }
@@ -49,13 +49,13 @@ class TreeFeller(private val tickScheduler: TickScheduler): PlayerBlockBreakEven
                 .filter { roofMedia.contains(world.getBlockState(it).block) }
                 .forEach {
                     val block = world.getBlockState(it).block
-                    scheduleRoofBreak(ROOF_MEDIA_TO_SEARCH_VECS[block], world, roofMedia, branchMediaSet, it)
+                    scheduleRoofBreak(block.roofMediaSearchVecs(), world, roofMedia, branchMediaSet, it)
                 }
     }
 
     private fun scheduleRoofBreaks(
             searchVectors: Set<Vec3i>,
-            world: World,
+            world: Level,
             roofMediaSet: Set<Block>,
             branchMediaSet: Set<Block>,
             blockPosition: BlockPos,
@@ -63,14 +63,14 @@ class TreeFeller(private val tickScheduler: TickScheduler): PlayerBlockBreakEven
     ) {
         if (depth > MAX_LEAF_SEARCH_DEPTH) return
 
-        searchVectors.map { blockPosition.add(it) }
+        searchVectors.map { blockPosition.offset(it) }
                 .filter { roofMediaSet.contains(world.getBlockState(it).block) }
                 .forEach { scheduleRoofBreak(searchVectors, world, roofMediaSet, branchMediaSet, it) }
     }
 
     private fun scheduleRoofBreak(
             searchVectors: Set<Vec3i>,
-            world: World,
+            world: Level,
             roofMediaSet: Set<Block>,
             branchMediaSet: Set<Block>,
             blockPosition: BlockPos,
@@ -80,7 +80,7 @@ class TreeFeller(private val tickScheduler: TickScheduler): PlayerBlockBreakEven
             if (roofMediaSet.contains(world.getBlockState(blockPosition).block)
                     && !roofBranchSearch(searchVectors, world, roofMediaSet, branchMediaSet, blockPosition)
             ) {
-                world.breakBlock(blockPosition, true)
+                world.removeBlock(blockPosition, true)
                 scheduleRoofBreaks(searchVectors, world, roofMediaSet, branchMediaSet, blockPosition, depth + 1)
             }
         })
@@ -88,7 +88,7 @@ class TreeFeller(private val tickScheduler: TickScheduler): PlayerBlockBreakEven
 
     private fun roofBranchSearch(
             nextVectors: Set<Vec3i>,
-            world: World,
+            world: Level,
             roofMediaSet: Set<Block>,
             branchMediaSet: Set<Block>,
             blockPosition: BlockPos,
@@ -104,7 +104,7 @@ class TreeFeller(private val tickScheduler: TickScheduler): PlayerBlockBreakEven
                 false
             } else {
                 val out = nextVectors
-                        .map { blockPosition.add(it) to it }
+                        .map { blockPosition.offset(it) to it }
                         .any {
                             roofBranchSearch(nextVectors.filterNot { n -> it.second.isOpposedAlongADimension(n) }.toSet(),
                                     world, roofMediaSet, branchMediaSet, it.first, depth + 1, blockPositionCache)
@@ -115,7 +115,7 @@ class TreeFeller(private val tickScheduler: TickScheduler): PlayerBlockBreakEven
     }
 
     private fun scheduleChopTask(
-            world: World,
+            world: Level,
             leafMediaSet: Set<Block>,
             branchMediaSet: Set<Block>,
             blockPosition: BlockPos,
@@ -123,28 +123,28 @@ class TreeFeller(private val tickScheduler: TickScheduler): PlayerBlockBreakEven
     ) {
         tickScheduler.addScheduledTask(Runnable{
             if (branchMediaSet.contains(world.getBlockState(blockPosition).block)) {
-                world.breakBlock(blockPosition, true)
+                world.removeBlock(blockPosition, true)
                 scheduleChopTasks(TREE_CAPITATOR_NEXT_VECS, world, leafMediaSet, branchMediaSet, blockPosition, depth + 1)
             }
         })
     }
 
-    private fun detectIfTree(world: World, blockPosition: BlockPos, block: Block): Boolean =
+    private fun detectIfTree(world: Level, blockPosition: BlockPos, block: Block): Boolean =
             noSiblingSupports(world, blockPosition, block) &&
             aboveGrowthMedia(world, blockPosition, block) &&
             belowRoofMedia(world, blockPosition, block)
 
-    private fun belowRoofMedia(world: World, blockPosition: BlockPos, block: Block): Boolean {
-        val roofMedia = LOGS_TO_ROOF_MEDIA[block]
-        val logVariants = LOGS_TO_LOGS_VARIANTS[block]
-        return UPPER_DETECTION_VECTORS.map { blockPosition.add(it) }
+    private fun belowRoofMedia(world: Level, blockPosition: BlockPos, block: Block): Boolean {
+        val roofMedia = block.getRoofMedia()
+        val logVariants = block.getLogTypes()
+        return UPPER_DETECTION_VECTORS.map { blockPosition.offset(it) }
                 .any { treeDetectionCombinator(roofMedia, logVariants, UPPER_DETECTION_VECTORS, world, it, 0) }
     }
 
-    private fun aboveGrowthMedia(world: World, blockPosition: BlockPos, block: Block): Boolean {
-        val growthMedia = LOGS_TO_GROWTH_MEDIA[block]
-        val logVariants = LOGS_TO_LOGS_VARIANTS[block]
-        return LOWER_DETECTION_VECTORS.map { blockPosition.add(it) }
+    private fun aboveGrowthMedia(world: Level, blockPosition: BlockPos, block: Block): Boolean {
+        val growthMedia = block.getGrowthMedia()
+        val logVariants = block.getLogTypes()
+        return LOWER_DETECTION_VECTORS.map { blockPosition.offset(it) }
                 .any { treeDetectionCombinator(growthMedia, logVariants, LOWER_DETECTION_VECTORS, world, it, 0) }
     }
 
@@ -152,7 +152,7 @@ class TreeFeller(private val tickScheduler: TickScheduler): PlayerBlockBreakEven
             endMediaSet: Set<Block>,
             branchMediaSet: Set<Block>,
             detectionVectors: Set<Vec3i>,
-            world: World,
+            world: Level,
             position: BlockPos,
             depth: Int
     ): Boolean {
@@ -162,15 +162,15 @@ class TreeFeller(private val tickScheduler: TickScheduler): PlayerBlockBreakEven
             (
                 depth < MAX_DETECTION_DEPTH
                     && branchMediaSet.contains(blockHere)
-                    && detectionVectors.map { position.add(it) }
+                    && detectionVectors.map { position.offset(it) }
                         .any {
                             treeDetectionCombinator(endMediaSet, branchMediaSet, detectionVectors, world, it, depth + 1)
                         }
             )
     }
 
-    private fun noSiblingSupports(world: World, blockPosition: BlockPos, block: Block): Boolean =
+    private fun noSiblingSupports(world: Level, blockPosition: BlockPos, block: Block): Boolean =
             SIBLING_SUPPORT_VECTORS.stream()
-                    .map { world.getBlockState(blockPosition.add(it)).block }
+                    .map { world.getBlockState(blockPosition.offset(it)).block }
                     .allMatch { block != it }
 }

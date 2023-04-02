@@ -1,0 +1,35 @@
+[versions]
+kotlin = "1.8.0"
+
+minecraft = "1.18.2"
+qfapi = "1.0.0-beta.26+0.59.1-1.18.2"
+flk = "1.9.2+kotlin.1.8.10"
+loader = "0.17.0"
+mappings = "1.18.2+build.26"
+loom = "1.+"
+
+commons_math3 = "3.6.1"
+
+junit = "5.8.1"
+
+[libraries]
+minecraft = { module = "com.mojang:minecraft", version.ref = "minecraft" }
+qfapi = { module = "org.quiltmc.quilted-fabric-api:quilted-fabric-api", version.ref = "qfapi" }
+qfapi_deprecated = { module = "org.quiltmc.quilted-fabric-api:quilted-fabric-api-deprecated", version.ref = "qfapi" }
+
+# have to use fabric since qkl is not available for 1.18.2
+flk = { module = "net.fabricmc:fabric-language-kotlin", version.ref = "flk" }
+quilt_loader = { module = "org.quiltmc:quilt-loader", version.ref = "loader" }
+quilt_mappings = { module = "org.quiltmc:quilt-mappings", version.ref = "mappings" }
+
+commons_math3 = { module = "org.apache.commons:commons-math3", version.ref = "commons_math3" }
+
+junit_api = { module = "org.junit.jupiter:junit-jupiter-api", version.ref = "junit"}
+junit_engine = { module = "org.junit.jupiter:junit-jupiter-engine", version.ref = "junit"}
+
+[bundles]
+quilted_fabric_api = ["qfapi", "qfapi_deprecated"]
+
+[plugins]
+kotlin = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
+quilt_loom = { id = "org.quiltmc.loom", version.ref = "loom" }

@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "quilt_loader": {
+    "group": "us.sodiumlabs",
+    "id": "sodiumlabs_mod",
+    "version": "${version}",
+
+    "entrypoints": {
+      "main": [
+        "us.sodiumlabs.SodiumServiceInitializer"
+      ]
+    },
+
+    "intermediate_mappings": "net.fabricmc:intermediary",
+
+    "metadata": {
+      "name": "Sodium Labs' Mod",
+      "description": "Several convenience mods to make the game better",
+      "contributors": {
+        "napentathol": "Developer"
+      },
+      "contact": {
+        "homepage": "https://github.com/napentathol/SodiumLabsPlugin",
+        "sources": "https://github.com/napentathol/SodiumLabsPlugin"
+      },
+
+      "license": "MIT",
+      "icon": "assets/modid/icon.png"
+    }
+  },
+
+  "mixin": [
+    "creeper.mixins.json",
+    "bonemeal.mixins.json",
+    "enderman.mixins.json",
+    "villager.mixins.json"
+  ]
+}

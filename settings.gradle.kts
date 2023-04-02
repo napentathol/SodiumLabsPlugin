@@ -1,9 +1,18 @@
 pluginManagement {
     repositories {
-        maven(url = "https://maven.fabricmc.net/") {
-            name = "Fabric"
+        maven {
+            name = "Quilt"
+            url = uri("https://maven.quiltmc.org/repository/release")
         }
-        mavenCentral()
+        // Currently needed for Intermediary and other temporary dependencies
+        maven {
+            name = "Fabric"
+            url = uri("https://maven.fabricmc.net/")
+        }
+
         gradlePluginPortal()
+        mavenCentral()
     }
 }
+
+rootProject.name = "quilt-kotlin-template-mod"
